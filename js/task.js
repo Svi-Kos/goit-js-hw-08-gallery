@@ -23,7 +23,7 @@ const makeGalleryItemMarkup = ({ preview, original, description }) => {
     <li class="gallery__item">
       <a
         class="gallery__link"
-        href=""
+        href="${original}"
       >
         <img
           class="gallery__image"
@@ -36,34 +36,34 @@ const makeGalleryItemMarkup = ({ preview, original, description }) => {
     `;
 };
 
-const imageGalleryEl = document.querySelector(".js-gallery");
+const imageGalleryContainer = document.querySelector(".js-gallery");
 
 const makeGalleryMarkup = gallery.map(makeGalleryItemMarkup).join("");
 
-imageGalleryEl.insertAdjacentHTML("afterbegin", makeGalleryMarkup);
+imageGalleryContainer.insertAdjacentHTML("afterbegin", makeGalleryMarkup);
 
-// тимчасовий оверлей контент
+// оверлей контент
+
+imageGalleryContainer.addEventListener("click", addLightboxContent);
 
 const lightboxContentEl = document.querySelector(".lightbox__content img");
 
-lightboxContentEl.src =
-  "https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546_1280.jpg";
-
-lightboxContentEl.alt = "Tulips";
+function addLightboxContent(evt) {
+  lightboxContentEl.src = evt.target.dataset.source;
+  lightboxContentEl.alt = evt.target.alt;
+}
 
 // закрити відкрити модальне вікно
 
 const refs = {
-  openLightbox: document.querySelector(".js-gallery"),
   closeLightbox: document.querySelector('[data-action="close-lightbox"]'),
   lightbox: document.querySelector(".js-lightbox"),
   overlay: document.querySelector(".lightbox__overlay"),
 };
 
-refs.openLightbox.addEventListener("click", onOpenLightbox);
+imageGalleryContainer.addEventListener("click", onOpenLightbox);
 refs.closeLightbox.addEventListener("click", onCloseLightbox);
 refs.overlay.addEventListener("click", onOverlayClick);
-window.addEventListener("keydown", onEscKey);
 
 function onOpenLightbox(event) {
   window.addEventListener("keydown", onEscKey);
@@ -74,6 +74,7 @@ function onOpenLightbox(event) {
 function onCloseLightbox() {
   window.removeEventListener("keydown", onEscKey);
   refs.lightbox.classList.remove("is-open");
+  lightboxContentEl.src = "";
 }
 
 function onOverlayClick() {
